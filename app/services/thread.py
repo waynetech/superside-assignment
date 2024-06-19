@@ -35,9 +35,11 @@ async def create_thread(user: User, assistant_id: str):
 async def list_all_threads_by_logged_in_user(user: User):
     threads = []
     try:
-        threads = await Thread.find(
-            Thread.owner.id == user.id, fetch_links=True
-        ).to_list()
+        threads = (
+            await Thread.find(Thread.owner.id == user.id, fetch_links=True)
+            .sort(-Thread.created_at)
+            .to_list()
+        )
     except Exception as e:
         raise HTTPException(status_code=404, detail=str(e))
     return {"threads": threads}

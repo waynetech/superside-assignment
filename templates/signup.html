@@ -1,0 +1,155 @@
+<!-- app/templates/base.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <!-- Tailwind CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <!-- Flowbite -->
+    <link href="https://unpkg.com/flowbite@1.3.2/dist/flowbite.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 flex items-center justify-center h-screen">
+    <div class="w-full max-w-xs">
+        <form id="signupForm" class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4" method="post" action="/signup">
+            <h2 class="text-center text-2xl font-bold mb-4">Sign-up</h2>
+            <div class="mb-4">
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="first_name">
+                    First Name
+                </label>
+                <input id="first_name" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="first_name" name="first_name" type="text" placeholder="First Name">
+            </div>
+            <div class="mb-4">
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="last_name">
+                    Last Name
+                </label>
+                <input id="last_name" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="last_name" name="last_name" type="text" placeholder="Last Name">
+            </div>
+            <div class="mb-4">
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="email">
+                    Email
+                </label>
+                <input id="email" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="email" name="email" type="email" placeholder="Email">
+            </div>
+            <div class="mb-4">
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="password">
+                    Password
+                </label>
+                <input id="password" minlength=8 class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline" id="password" name="password" type="password" placeholder="Password">
+            </div>
+            <div class="mb-4">
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="signup_code">
+                    Signup Code
+                </label>
+                <input id="signup_code" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="signup_code" name="signup_code" type="text" placeholder="Signup Code">
+            </div>
+            <div class="flex items-center justify-between">
+                <a href="login" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit">
+                    Login
+                </a>
+                <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit">
+                    Sign Up
+                </button>
+
+            </div>
+        </form>
+        <div id="alertContainer"></div>
+
+    </div>
+     <!-- Loader -->
+<div id="loader" class="fixed inset-0 flex items-center justify-center bg-opacity-75 hidden">
+    <div class="text-center">
+        <div role="status">
+            <svg aria-hidden="true" class="w-8 h-8 mr-2 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08197 50.5908C9.08197 73.2206 27.3702 91.5088 50 91.5088C72.6298 91.5088 90.918 73.2206 90.918 50.5908C90.918 27.961 72.6298 9.67285 50 9.67285C27.3702 9.67285 9.08197 27.961 9.08197 50.5908Z" fill="currentColor"/>
+                <path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5538C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8435 15.1192 80.8826 10.723 75.2124 7.41289C69.5422 4.10279 63.2754 1.94025 56.7663 1.05126C51.766 0.367259 46.6976 0.44618 41.7345 1.27873C39.2618 1.69443 37.7924 4.19778 38.4295 6.62326C39.0666 9.04874 41.5289 10.4717 44.0202 10.1071C47.924 9.49934 51.8932 9.52609 55.7514 10.179C60.8694 11.0325 65.786 13.0455 70.1685 16.114C74.551 19.1826 78.3187 23.239 81.2139 28.0417C83.6066 31.7436 85.4557 35.7697 86.7025 40.0089C87.3564 42.2099 89.5426 43.678 91.9676 43.0409Z" fill="currentFill"/>
+            </svg>
+            <span class="sr-only">Loading...</span>
+        </div>
+    </div>
+</div>
+    <!-- Flowbite JavaScript -->
+    <script src="https://unpkg.com/flowbite@1.3.2/dist/flowbite.js"></script>
+    <!-- Add the JavaScript code to handle the form submission -->
+    <script>
+        document.getElementById('signupForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            // Show loader
+            function showLoader() {
+                document.getElementById('loader').classList.remove('hidden');
+            }
+        
+            // Hide loader
+            function hideLoader() {
+                document.getElementById('loader').classList.add('hidden');
+            }
+        
+            const formData = {
+                first_name: document.getElementById('first_name').value,
+                last_name: document.getElementById('last_name').value,
+                email: document.getElementById('email').value,
+                password: document.getElementById('password').value,
+                signup_code: document.getElementById('signup_code').value,
+            };
+            showLoader();
+            try {
+                const response = await fetch('/api/v1/auth/sign-up', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(formData),
+                });
+        
+                if (!response.ok) {
+                    if (response.status === 400) {
+                        throw new Error('Bad Request');
+                        return;
+                    }
+                    if (response.status === 422) {
+                        const data = await response.json();
+                        console.log('Validation errors:', data);
+                       
+                        throw new Error(JSON.stringify(data.detail));
+                        return;
+                    }
+                    throw new Error('Network response was not ok');
+                }
+        
+                const data = await response.json();
+                console.log('Sign up successful:', data);
+                localStorage.setItem('token', data.access_token);
+        
+                showAlert('Success', 'Sign up successful!', 'success');
+                setTimeout(() => {
+                    window.location.href = '/';
+                }, 2000);
+
+            } catch (error) {
+                
+                showAlert('Error', error, 'error');
+            } finally {
+                hideLoader();
+            }
+        });
+        
+        function showAlert(title, message, type) {
+            const alertContainer = document.getElementById('alertContainer');
+            alertContainer.innerHTML = `
+                <div class="bg-${type === 'success' ? 'green' : 'red'}-100 border border-${type === 'success' ? 'green' : 'red'}-400 text-${type === 'success' ? 'green' : 'red'}-700 px-4 py-3 rounded relative mt-4" role="alert">
+                    <strong class="font-bold">${title}</strong>
+                    <span class="block sm:inline">${message}</span>
+                    <span class="absolute top-0 bottom-0 right-0 px-4 py-3">
+                        <svg class="fill-current h-6 w-6 text-${type === 'success' ? 'green' : 'red'}-500" role="button" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><title>Close</title><path d="M14.348 5.652a1 1 0 10-1.414-1.414L10 7.172 7.066 4.238a1 1 0 00-1.414 1.414l2.934 2.934-2.934 2.934a1 1 0 101.414 1.414l2.934-2.934 2.934 2.934a1 1 0 001.414-1.414l-2.934-2.934 2.934-2.934z"/></svg>
+                    </span>
+                </div>
+            `;
+        
+            setTimeout(() => {
+                alertContainer.innerHTML = '';
+            }, 5000);
+        }
+        </script>
+</body>
+</html>
