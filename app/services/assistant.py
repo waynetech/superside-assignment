@@ -9,3 +9,12 @@ async def list_all_assistants():
     except Exception as e:
         raise HTTPException(status_code=404, detail=str(e))
     return {"assistants": assistants}
+
+
+async def get_assistant(assistant_id: str):
+    assistant = None
+    try:
+        assistant = openai.beta.assistants.retrieve(assistant_id)
+    except Exception as e:
+        raise HTTPException(status_code=404, detail=str(e))
+    return assistant
