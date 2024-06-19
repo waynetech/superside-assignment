@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field, EmailStr
+from pydantic import BaseModel
 
 
 class TokenSchema(BaseModel):
@@ -9,5 +9,3 @@ class TokenSchema(BaseModel):
 class TokenPayloadSchema(BaseModel):
     sub: str
     exp: int
-
-

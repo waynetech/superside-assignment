@@ -10,6 +10,7 @@ class Settings(BaseSettings):
     access_token_expire_minutes: int = os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", 60 * 24)
     refresh_token_expire_minutes: int = os.getenv("JWT_REFRESH_SECRET_KEY", 60 * 24 * 7)
     bot_protection_secret: str = os.getenv("BOT_PROTECTION_SECRET", "31ar31")
+    openai_api_key: str = os.getenv("OPENAI_API_KEY", "")
 
 
 settings = Settings()

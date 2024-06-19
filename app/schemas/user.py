@@ -8,8 +8,8 @@ class UserSchema(BaseModel):
     last_name: str
     email: EmailStr | None = Field(default=None)
     password: str = Field(min_length=8)
-    
-    
+
+
 class UserSignUpSchema(BaseModel):
     first_name: str
     last_name: str
@@ -34,5 +34,3 @@ class UserResponseSchema(BaseSchema):
 
 class UserListSchema(BaseModel):
     users: List[UserResponseSchema]
-
-
