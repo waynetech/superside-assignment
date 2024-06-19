@@ -6,6 +6,7 @@
 {% block content %}
 <script>
     document.addEventListener('DOMContentLoaded', function () {
+        showLoader();
     // Check authentication when the page loads
     checkAuth();
     // Logout function to clear the token and redirect to login page

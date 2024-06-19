@@ -4,6 +4,7 @@ from .config import settings
 
 from app.models.user import User
 from app.models.thread import Thread
+from app.models.message import Message
 
 
 class DataBase:
@@ -17,7 +18,7 @@ async def initialize_db():
     DB.client = AsyncIOMotorClient(settings.database_url)
     await init_beanie(
         database=DB.client.superside_db,
-        document_models=[User, Thread],
+        document_models=[User, Thread, Message],
     )
 
 

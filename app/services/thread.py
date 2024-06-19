@@ -43,3 +43,15 @@ async def list_all_threads_by_logged_in_user(user: User):
     except Exception as e:
         raise HTTPException(status_code=404, detail=str(e))
     return {"threads": threads}
+
+
+async def get_thread(thread_id: str):
+    thread = None
+    try:
+        thread = await Thread.find_one(Thread.thread_id == thread_id)
+        if not thread:
+            raise HTTPException(status_code=404, detail="Thread not found")
+    except Exception as e:
+        raise HTTPException(status_code=404, detail=str(e))
+
+    return thread
