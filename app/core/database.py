@@ -15,7 +15,7 @@ DB = DataBase()
 async def initialize_db():
     DB.client = AsyncIOMotorClient(settings.database_url)
     await init_beanie(
-        database=DB.client.get_default_database(),
+        database=DB.client.superside_db,
         document_models=[
             User,
         ],

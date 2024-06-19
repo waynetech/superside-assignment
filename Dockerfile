@@ -1,5 +1,11 @@
 FROM python:3.10-slim
 
+# prevent Python from writing pyc files to disc
+ENV PYTHONDONTWRITEBYTECODE 1
+
+# prevent Python from buffering stdout and stderr
+ENV PYTHONUNBUFFERED 1
+
 # Set the working directory
 WORKDIR /app
 
@@ -15,11 +21,8 @@ RUN pip install --no-cache-dir uvicorn watchdog
 # Copy the rest of the application
 COPY . .
 
-# Set environment variable for development
-ENV FASTAPI_ENV=development
-
 # Expose the port FastAPI runs on
-EXPOSE 8000
+EXPOSE 9000
 
-# Command to run the application with auto-reload for development
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+# Command to run the application
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "9000", "--reload"]
