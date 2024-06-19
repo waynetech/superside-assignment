@@ -2,6 +2,7 @@ from app.core.openai_client import openai
 from fastapi import HTTPException
 from app.models.user import User
 from app.models.thread import Thread
+from app.models.message import Message
 from app.services.assistant import get_assistant
 from pymongo.errors import DuplicateKeyError
 from pydantic import ValidationError
@@ -36,7 +37,7 @@ async def list_all_threads_by_logged_in_user(user: User):
     threads = []
     try:
         threads = (
-            await Thread.find(Thread.owner.id == user.id, fetch_links=True)
+            await Thread.find(Thread.owner.id == user.id, fetch_links=True, limit=20)
             .sort(-Thread.created_at)
             .to_list()
         )
@@ -55,3 +56,14 @@ async def get_thread(thread_id: str):
         raise HTTPException(status_code=404, detail=str(e))
 
     return thread
+
+
+async def delete_all_threads(user: User):
+    try:
+        rt = await Thread.find(Thread.owner.id == user.id).delete()
+        rm = await Message.find(Message.owner.id == user.id).delete()
+
+    except Exception as e:
+        print(e)
+        raise HTTPException(status_code=404, detail=str(e))
+    return {"message": "All threads deleted successfully"}

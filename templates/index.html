@@ -4,16 +4,91 @@
 {% block title %}GraphRAG Chat App{% endblock %}
 
 {% block content %}
+<style>
+    #chat-container {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        overflow-y: auto;
+        max-height: 70vh;
+    }
+    
+    .self-end {
+        align-self: flex-end;
+    }
+    
+    .self-start {
+        align-self: flex-start;
+    }
+
+    .chat-history {
+        overflow-y: auto;
+        max-height: 70vh;
+    }
+    
+</style>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        showLoader();
+    showLoader();
     // Check authentication when the page loads
     checkAuth();
     // Logout function to clear the token and redirect to login page
     document.getElementById('create-thread').addEventListener('click', createThread);
+    document.getElementById('delete-threads').addEventListener('click', deleteThreads);
+    document.getElementById('message-field').addEventListener("keydown", function (e) {
+        if (e.code === "Enter") {  //checks whether the pressed key is "Enter"
+            sendMessage();
+        }
+    });
+    document.getElementById('ex-1').addEventListener('click', function() {
+        const content = document.getElementById('ex-1').textContent.trimStart();
+        document.getElementById('message-field').value = content;
+    });
+    document.getElementById('ex-2').addEventListener('click', function() {
+        
+        const content = document.getElementById('ex-2').textContent.trimStart();
+
+        document.getElementById('message-field').value = content;
+    });
+    document.getElementById('ex-3').addEventListener('click', function() {
+        const content = document.getElementById('ex-3').textContent.trimStart();
+
+        document.getElementById('message-field').value = content;
+    });
 
 
+    // delete all threads
 
+    async function deleteThreads() {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            console.error('No token found in localStorage');
+            return;
+        }
+        showLoader();
+        try {
+            const response = await fetch('/api/v1/threads/', {
+                method: 'DELETE',
+                headers: {
+                    'accept': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+
+            const data = await response.json();
+            console.log(data.threads);
+            // Here you can update the DOM with the fetched data
+            displayThreads(data.threads);
+        } catch (error) {
+            console.error('Error fetching threads:', error);
+        }finally {
+            hideLoader();
+        }
+    }
     
     // fetch all assistants
     async function fetchAssistants() {
@@ -41,6 +116,7 @@
             // Here you can update the DOM with the fetched data
             // For example, you could call a function to display the assistants in your chat history section
             populateDropdown(data.assistants);
+            createThread();
         } catch (error) {
             console.error('Error fetching assistants:', error);
         }finally {
@@ -79,39 +155,37 @@ function setDefaultSelection(selectedName, assistantId) {
     const dropdownButton = document.getElementById('dropdownDefaultButton');
     dropdownButton.setAttribute('data-id', assistantId);
     dropdownButton.textContent = selectedName;
-    const icon = document.createElement('svg');
-    icon.className = 'w-2.5 h-2.5 ml-2.5';
-    icon.setAttribute('aria-hidden', 'true');
-    icon.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
-    icon.setAttribute('fill', 'none');
-    icon.setAttribute('viewBox', '0 0 10 6');
-    icon.innerHTML = '<path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4"/>';
-    dropdownButton.appendChild(icon);
 }
 
 
+fetchThreads();
 
     fetchAssistants();
     });
 </script>
 <div class="flex h-screen">
-    <div class="w-1/4 bg-blue-900 p-4 flex flex-col">
+    <div class="w-1/4 bg-gray-900 p-4 flex flex-col">
         <button id="create-thread" class="bg-green-400 text-white font-bold px-4 py-2 rounded mb-4 w-full flex items-center justify-center">
             <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
             </svg>
-            Create a new thread
+            New thread
+        </button>
+        <button id="delete-threads" class="bg-gray-500 text-white font-bold px-4 py-2 rounded mb-4 w-full flex items-center justify-center">
+            <svg class="w-6 h-6 text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+                <path fill-rule="evenodd" d="M8.586 2.586A2 2 0 0 1 10 2h4a2 2 0 0 1 2 2v2h3a1 1 0 1 1 0 2v12a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V8a1 1 0 0 1 0-2h3V4a2 2 0 0 1 .586-1.414ZM10 6h4V4h-4v2Zm1 4a1 1 0 1 0-2 0v8a1 1 0 1 0 2 0v-8Zm4 0a1 1 0 1 0-2 0v8a1 1 0 1 0 2 0v-8Z" clip-rule="evenodd"/>
+              </svg>
+              
+            Delete all threads
         </button>
         <div class="flex-1 mt-4">
-            <h2 class="text-xl text-white font-bold text-center">Chat History</h2>
-            <hr class="h-1 bg-white">
+            
+            <h2 class="text-l text-white font-bold text-center">Chat History</h2>
+            <hr class="bg-white">
             <!-- Chat history items go here -->
             <!-- flowbite buttons with text -->
             <div class="chat-history">
             </div>
-                <!--button class="bg-blue-700 text-white px-4 py-2 rounded mt-4 w-full">Burger King</button-->
-            <!--button class="bg-blue-700 text-white px-4 py-2 rounded mt-4 w-full">Burger King</button>
-            <button class="bg-blue-700 text-white px-4 py-2 rounded mt-4 w-full">McDonald's</button-->
         </div>
         <button id="logout-button" class="bg-red-500 text-white px-4 py-2 rounded mt-4">Logout</button>
     </div>
@@ -121,7 +195,7 @@ function setDefaultSelection(selectedName, assistantId) {
         <div class="flex justify-between mb-4">
             <h2 class="text-xl font-bold">GraphRAG</h2>
             <form>
-            <button id="dropdownDefaultButton" data-dropdown-toggle="dropdown" class="text-white bg-blue-900 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" type="button">Dropdown button <svg class="w-2.5 h-2.5 ms-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+            <button id="dropdownDefaultButton" data-dropdown-toggle="dropdown" class="text-white bg-blue-600 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" type="button">Dropdown button <svg class="w-2.5 h-2.5 ms-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4"/>
                 </svg>
                 </button>
@@ -135,20 +209,35 @@ function setDefaultSelection(selectedName, assistantId) {
             </form>
             <!-- button class="bg-yellow-200 text-black px-4 py-2 rounded">Burger King</button-->
         </div>
-        <div class="flex-1 bg-gray-100 p-4 rounded-lg shadow-inner overflow-y-auto">
+        <div id="chat-container" class="flex-1 bg-gray-100 p-4 rounded-lg shadow-inner overflow-y-auto">
             <!-- Chat messages go here -->
             <div class="flex flex-wrap gap-2 mb-4">
-                <div class="bg-purple-200 p-3 rounded-lg max-w-xs">
-                    Write a mail for on-boarding users as Burger King?
+                <div id="ex-1" class="bg-purple-200 p-3 rounded-lg max-w-xs">
+                    Write a mid journey prompt for a flyer of a new Burger king campaign
                 </div>
-                <div class="bg-purple-200 p-3 rounded-lg max-w-xs">
-                    Write a mail for on-boarding users as Burger King?
+                <div id="ex-2" class="bg-purple-200 p-3 rounded-lg max-w-xs">
+                    Write a mid journey prompt for burger king social media banner using the brand tone of voice
+                </div>
+                <div id="ex-3" class="bg-purple-200 p-3 rounded-lg max-w-xs">
+                    Write a copy for christmas deals for a burger king newspaper Ad
                 </div>
             </div>
         </div>
         <div class="mt-4 flex items-center">
-            <input type="text" class="flex-1 shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="Type a message...">
-            <button class="ml-2 bg-blue-900 text-white px-4 py-2 rounded">Send</button>
+            <input id="message-field" type="text" class="flex-1 shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="Type a message...">
+            <button class="ml-2 bg-blue-600 text-white px-4 py-2 rounded">Send</button>
+            <!-- Loader -->
+<div id="send-loader" class="bg-gray-100 bg-opacity-75 hidden">
+    <div class="text-center">
+        <div role="status">
+            <svg aria-hidden="true" class="w-8 h-8 mr-2 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08197 50.5908C9.08197 73.2206 27.3702 91.5088 50 91.5088C72.6298 91.5088 90.918 73.2206 90.918 50.5908C90.918 27.961 72.6298 9.67285 50 9.67285C27.3702 9.67285 9.08197 27.961 9.08197 50.5908Z" fill="currentColor"/>
+                <path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5538C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8435 15.1192 80.8826 10.723 75.2124 7.41289C69.5422 4.10279 63.2754 1.94025 56.7663 1.05126C51.766 0.367259 46.6976 0.44618 41.7345 1.27873C39.2618 1.69443 37.7924 4.19778 38.4295 6.62326C39.0666 9.04874 41.5289 10.4717 44.0202 10.1071C47.924 9.49934 51.8932 9.52609 55.7514 10.179C60.8694 11.0325 65.786 13.0455 70.1685 16.114C74.551 19.1826 78.3187 23.239 81.2139 28.0417C83.6066 31.7436 85.4557 35.7697 86.7025 40.0089C87.3564 42.2099 89.5426 43.678 91.9676 43.0409Z" fill="currentFill"/>
+            </svg>
+            <span class="sr-only">Loading...</span>
+        </div>
+    </div>
+</div>
         </div>
     </div>
     
@@ -215,7 +304,13 @@ function setDefaultSelection(selectedName, assistantId) {
         function displayThreads(threads) {
             const chatHistory = document.querySelector('.chat-history');
             chatHistory.innerHTML = '';  // Clear existing content
-    
+            if (!threads) {
+                const noThreadsElement = document.createElement('p');
+                noThreadsElement.textContent = 'No threads found';
+                noThreadsElement.className = 'text-center text-gray-500';
+                chatHistory.appendChild(noThreadsElement);
+                return;
+            }
             threads.forEach(thread => {
                 // create a form with input fields for each thread and append the button
                 const formElement = document.createElement('form');
@@ -233,9 +328,10 @@ function setDefaultSelection(selectedName, assistantId) {
                 };
                 //<button class="bg-blue-700 text-white px-4 py-2 rounded mt-4 w-full">Burger King</button>
                 threadElement.id = thread.thread_id;
-                threadElement.className = 'bg-blue-700 text-sm text-white px-2 py-2 rounded mt-4 w-full';
+                threadElement.className = 'bg-gray-600 text-sm text-white px-2 py-2 rounded mt-4 w-full';
                 threadElement.textContent = thread.name.slice(0,25);  // Assuming each thread has a title
                 //document.getElementById("form_"+thread.thread_id).addEventListener('click', getThreadMessages);
+               
                 formElement.appendChild(inputElement);
                 formElement.appendChild(threadElement);
                 chatHistory.appendChild(formElement);
@@ -243,19 +339,111 @@ function setDefaultSelection(selectedName, assistantId) {
             });
         }
 
-        fetchThreads();
 
-        function getThreadMessages(threadId) {
-            console.log(threadId)
-            // Implement this function to fetch messages for a specific thread
-            // You can use the threadId to fetch messages for a specific thread
+        async function getThreadMessages(threadId) {
+            console.log(threadId);
+            const token = localStorage.getItem('token');
+            if (!token) {
+                console.error('No token found in localStorage');
+                return;
+            }
+        
+            try {
+                const response = await fetch(`/api/v1/messages/?thread_id=${threadId}`, {
+                    method: 'GET',
+                    headers: {
+                        'accept': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+        
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+        
+                const data = await response.json();
+                console.log(data.messages);
+                // Here you can update the DOM with the fetched data
+                displayMessages(data.messages);
+            } catch (error) {
+                console.error('Error fetching messages:', error);
+            }
+        }
+        
+        function scrollToBottom() {
+            const chatContainer = document.getElementById('chat-container');
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+        function displayMessages(messages) {
+            const chatContainer = document.getElementById('chat-container');
+            //chatContainer.innerHTML = '';  // Clear existing content
+
+        
+            messages.forEach(message => {
+                const messageElement = document.createElement('div');
+                messageElement.className = message.role === 'assistant' ? 'bg-purple-200 p-5 rounded-lg max-w-xs self-start' : 'bg-green-200 p-3 rounded-lg max-w-xs self-end';
+                messageElement.innerHTML = `
+                    <p><strong>${message.role === 'assistant' ? 'Assistant' : 'User'}:</strong></p><br>
+                    <p>${message.message.replace(/\n/g, '<br>')}</p>
+                `;
+        
+                chatContainer.appendChild(messageElement);
+            });
+            scrollToBottom();
+        }
+        
+        
+        async function sendMessage() {
+            const messageInput = document.getElementById('message-field');
+            const message = messageInput.value;
+            const threadId = getCurrentThreadId();  // Implement this function to get the current thread ID
+            const token = localStorage.getItem('token');
+
+            showSendLoader();
+        
+            if (!token || !message || !threadId) {
+                console.error('Missing token, message, or thread ID');
+                return;
+            }
+        
+            try {
+                const response = await fetch('/api/v1/messages/', {
+                    method: 'POST',
+                    headers: {
+                        'accept': 'application/json',
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ thread_id: threadId, message: message })
+                });
+        
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+        
+                const result = await response.json();
+                console.log('Message sent:', result);
+                // Fetch messages again to include the new message
+                getThreadMessages(threadId);
+            } catch (error) {
+                console.error('Error sending message:', error);
+            } finally {
+                messageInput.value = '';  // Clear the input field
+                hideSendLoader();
+            }
+        }
+        
+        document.querySelector('button.ml-2').addEventListener('click', sendMessage);
+        
+        function getCurrentThreadId() {
+            return localStorage.getItem('thread_id');
         }
 
+        function setThreadId(threadId) {
+            localStorage.setItem('thread_id', threadId);
+        }
 
         async function createThread() {
-            // Implement this function to create a new thread
-        
-            // Implementing fetch to create a new thread
             const token = localStorage.getItem('token');
             if (!token) {
                 console.error('No token found in localStorage');
@@ -267,9 +455,9 @@ function setDefaultSelection(selectedName, assistantId) {
             const data = {
                 assistant_id: assistant_id
             };
-
+        
             showLoader();
-
+        
             try {
                 const response = await fetch('/api/v1/threads/', {
                     method: 'POST',
@@ -280,13 +468,17 @@ function setDefaultSelection(selectedName, assistantId) {
                     },
                     body: JSON.stringify(data)
                 });
-
+        
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
                 }
-
+        
                 const result = await response.json();
                 console.log('Thread created:', result);
+                setThreadId(result.thread_id);
+                // Fetch messages for the newly created thread
+                //threadId = result.thread_id;
+                getThreadMessages(result.thread_id);
                 // Refresh threads list or handle the new thread as needed
                 fetchThreads();
             } catch (error) {

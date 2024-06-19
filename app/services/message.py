@@ -11,6 +11,7 @@ from app.models.message import Message
 
 async def create_message(user: User, thread_id: str, message: str):
     thread = await get_thread(thread_id)
+    message_obj = None
     if not thread:
         raise HTTPException(status_code=404, detail="Thread not found")
     try:

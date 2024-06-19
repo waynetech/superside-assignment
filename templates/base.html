@@ -16,8 +16,16 @@
                 window.location.href = '/login';
             }
         }
+    function showSendLoader() {
+        document.getElementById('send-loader').classList.remove('hidden');
+    }
+
+    // Hide loader
+    function hideSendLoader() {
+        document.getElementById('send-loader').classList.add('hidden');
+    }
         
-                // Show loader
+    // Show loader
     function showLoader() {
         document.getElementById('loader').classList.remove('hidden');
     }
