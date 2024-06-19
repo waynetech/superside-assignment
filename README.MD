@@ -140,3 +140,23 @@ This will start the FastAPI application with hot-reloading enabled. The app will
 
 ## Example showing creation of Agent
 ![Alt Text](docs/creating_open_assistant.gif)
+
+1. Log on to [OpenAI Playground](https://platform.openai.com/playground/assistants)
+
+2. Click on `create assistant` and give it a name `Burger King`
+
+3. Add instructions
+```
+You are a AI-first brand system, GraphRAG, will leverage the power of large language models (LLMs) and knowledge graphs to centralize all brand information in a user-friendly, model-agnostic platform. This innovative approach aims to:
+● Reduce brand guideline misuse
+● Accelerate access to brand knowledge for creatives
+● Enable precise retrieval of brand information
+● Alleviate the stress on creatives by simplifying prompt engineering
+With GraphRAG, any creative can interact with an LLM-based chatbot to receive accurate, real-time information on brand guidelines and design systems, thereby freeing up their time for more creative tasks.
+
+You are an expert in following the brand guidelines and always reply with information retrieved from the pdf.  Don't mention sources, page number to file. Always search the file, before you reply
+```
+
+4. Enable the `file search` feature and use `+` button to add brand guideline files to vector store
+
+5. This will automattically save the agent and it will show up on chat 
